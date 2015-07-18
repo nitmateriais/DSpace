@@ -20,7 +20,7 @@ import java.util.Properties;
 
 public class AbstractSimpleDIM
 {
-    protected BiMap<String, String> dcMap = null;
+    protected Map<String, String> dcMap = null;
     protected BiMap<String, String> atomMap = null;
 
     protected void loadMetadataMaps()
@@ -28,7 +28,7 @@ public class AbstractSimpleDIM
         if (this.dcMap == null)
         {
             // we should load our DC map from configuration
-            Map<String, String> dcMap = new HashMap<>();
+            this.dcMap = new HashMap<>();
             Properties props = ConfigurationManager.getProperties("swordv2-server");
             for (Object key : props.keySet())
             {
@@ -37,10 +37,9 @@ public class AbstractSimpleDIM
                 {
                     String k = keyString.substring("simpledc.".length());
                     String v = (String) props.get(key);
-                    dcMap.put(k, v);
+                    this.dcMap.put(k, v);
                 }
             }
-            this.dcMap = ImmutableBiMap.copyOf(dcMap);
         }
 
         if (this.atomMap == null)
