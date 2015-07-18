@@ -31,13 +31,14 @@ public class SimpleDIMEntryDisseminator extends AbstractSimpleDIM implements Swo
 
         for (Metadatum dcv : md.getMetadata())
         {
-            Element e = receipt.getWrappedEntry().addSimpleExtension(DIMUriRegisty.DIM_FIELD, dcv.value);
-            e.setAttributeValue("mdschema", dcv.schema);
-            e.setAttributeValue("element", dcv.element);
-            e.setAttributeValue("qualifier", dcv.qualifier);
-            e.setAttributeValue("lang", dcv.language);
-            e.setAttributeValue("authority", dcv.authority);
-            e.setAttributeValue("confidence",
+            ElementAttrWrapper e = new ElementAttrWrapper(
+                    receipt.getWrappedEntry().addSimpleExtension(DIMUriRegisty.DIM_FIELD, dcv.value));
+            e.attr("mdschema", dcv.schema);
+            e.attr("element", dcv.element);
+            e.attr("qualifier", dcv.qualifier);
+            e.attr("lang", dcv.language);
+            e.attr("authority", dcv.authority);
+            e.attr("confidence",
                     dcv.confidence != Choices.CF_UNSET
                     ? String.valueOf(dcv.confidence)
                     : null);
@@ -75,5 +76,23 @@ public class SimpleDIMEntryDisseminator extends AbstractSimpleDIM implements Swo
         }
 
         return receipt;
+    }
+
+    private class ElementAttrWrapper
+    {
+        private Element e;
+
+        public ElementAttrWrapper(Element e)
+        {
+            this.e = e;
+        }
+
+        public void attr(String key, String val)
+        {
+            if (key != null && val != null)
+            {
+                this.e.setAttributeValue(key, val);
+            }
+        }
     }
 }
