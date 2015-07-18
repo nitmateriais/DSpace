@@ -8,8 +8,6 @@
 
 package org.dspace.sword2;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
 import org.dspace.content.Item;
 import org.dspace.content.Metadatum;
 import org.dspace.core.ConfigurationManager;
@@ -21,7 +19,8 @@ import java.util.Properties;
 public class AbstractSimpleDIM
 {
     protected Map<String, String> dcMap = null;
-    protected BiMap<String, String> atomMap = null;
+    protected Map<String, String> atomMap = null;
+    protected Map<String, String> atomMapInv = null;
 
     protected void loadMetadataMaps()
     {
@@ -42,9 +41,10 @@ public class AbstractSimpleDIM
             }
         }
 
-        if (this.atomMap == null)
+        if (this.atomMap == null || this.atomMapInv == null)
         {
-            Map<String, String> atomMap = new HashMap<>();
+            this.atomMap = new HashMap<>();
+            this.atomMapInv = new HashMap<>();
             Properties props = ConfigurationManager.getProperties("swordv2-server");
             for (Object key : props.keySet())
             {
@@ -53,10 +53,10 @@ public class AbstractSimpleDIM
                 {
                     String k = keyString.substring("atom.".length());
                     String v = (String) props.get(key);
-                    atomMap.put(k, v);
+                    this.atomMap.put(k, v);
+                    this.atomMapInv.putIfAbsent(v, k);
                 }
             }
-            this.atomMap = ImmutableBiMap.copyOf(atomMap);
         }
     }
 
@@ -68,7 +68,6 @@ public class AbstractSimpleDIM
         Metadatum[] all = item.getMetadata(Item.ANY, Item.ANY, Item.ANY, Item.ANY);
         md.setMetadata(all);
 
-        Map<String, String> invAtomMap = this.atomMap.inverse();
         for (Metadatum dcv : all)
         {
             String valueMatch = dcv.schema + "." + dcv.element;
@@ -78,7 +77,7 @@ public class AbstractSimpleDIM
             }
 
             // look for the metadata in the atom map
-            md.addAtom(invAtomMap.get(valueMatch), dcv.value);
+            md.addAtom(this.atomMapInv.get(valueMatch), dcv.value);
         }
 
         return md;
