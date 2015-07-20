@@ -34,12 +34,10 @@ public class AuthorityValueGenerator {
 
 
     public static AuthorityValue generate(Context context, String authorityKey, String content, String field) {
-        AuthorityValue nextValue = null;
-
-        nextValue = generateRaw(authorityKey, content, field);
-
+        AuthorityValue nextValue = generateRaw(authorityKey, content, field);
 
         if (nextValue != null) {
+            boolean generateNewUUID = false;
             //Only generate a new UUID if there isn't one offered OR if the identifier needs to be generated
             if (StringUtils.isBlank(authorityKey)) {
                 // An existing metadata without authority is being indexed
@@ -47,18 +45,26 @@ public class AuthorityValueGenerator {
                 AuthorityValueFinder authorityValueFinder = new AuthorityValueFinder();
                 List<AuthorityValue> byValue = authorityValueFinder.findByExactValue(context, field, content);
                 if (byValue != null && !byValue.isEmpty()) {
-                    authorityKey = byValue.get(0).getId();
+                    nextValue.setId(byValue.get(0).getId());
                 } else {
-                    authorityKey = UUID.randomUUID().toString();
+                    generateNewUUID = true;
+
                 }
             } else if (StringUtils.startsWith(authorityKey, AuthorityValueGenerator.GENERATE)) {
-                authorityKey = UUID.randomUUID().toString();
+                if (StringUtils.isBlank(nextValue.getId())) {
+                    // Only generate a new UUID if an appropriate id was not already set
+                    // by the AuthorityValue implementation. This allows the implementation
+                    // to reuse existing Solr documents.
+                    generateNewUUID = true;
+                }
             }
 
-            nextValue.setId(authorityKey);
-            nextValue.updateLastModifiedDate();
-            nextValue.setCreationDate(new Date());
-            nextValue.setField(field);
+            if (generateNewUUID) {
+                nextValue.setId(UUID.randomUUID().toString());
+                nextValue.updateLastModifiedDate();
+                nextValue.setCreationDate(new Date());
+                nextValue.setField(field);
+            }
         }
 
         return nextValue;
