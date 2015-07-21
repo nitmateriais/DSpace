@@ -302,6 +302,7 @@
      <field name="value" type="text" multiValued="false" indexed="true" stored="true" required="false"/>
 
      <field name="orcid_id" type="string" multiValued="false" indexed="true" stored="true" required="false"/>
+     <field name="cnpq_id" type="string" multiValued="false" indexed="true" stored="true" required="false"/>
      <field name="first_name" type="text" multiValued="false" indexed="true" stored="true" required="false"/>
      <field name="last_name" type="text" multiValued="false" indexed="true" stored="true" required="false"/>
      <field name="name_variant" type="text" multiValued="true" indexed="true" stored="true" required="false"/>
