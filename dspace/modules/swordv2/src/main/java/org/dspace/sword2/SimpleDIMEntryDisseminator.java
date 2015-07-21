@@ -8,6 +8,7 @@
 package org.dspace.sword2;
 
 import org.apache.abdera.model.Element;
+import org.apache.commons.lang.StringUtils;
 import org.dspace.content.Item;
 import org.dspace.content.Metadatum;
 import org.dspace.content.authority.Choices;
@@ -89,7 +90,7 @@ public class SimpleDIMEntryDisseminator extends AbstractSimpleDIM implements Swo
 
         public void attr(String key, String val)
         {
-            if (key != null && val != null)
+            if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(val))
             {
                 this.e.setAttributeValue(key, val);
             }
