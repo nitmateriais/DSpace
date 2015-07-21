@@ -28,6 +28,7 @@
     <bean name="AuthorityTypes" class="org.dspace.authority.AuthorityTypes">
         <property name="types">
             <list>
+                <bean class="org.dspace.authority.lattes.LattesAuthorityValue"/>
                 <bean class="org.dspace.authority.orcid.OrcidAuthorityValue"/>
                 <bean class="org.dspace.authority.PersonAuthorityValue"/>
             </list>
@@ -41,7 +42,10 @@
         </property>
     </bean>
 
-    <alias name="OrcidSource" alias="AuthoritySource"/>
+    <alias name="LattesSource" alias="AuthoritySource"/>
+    <bean name="LattesSource" class="org.dspace.authority.lattes.Lattes">
+        <constructor-arg value="http://localhost:7070"/>
+    </bean>
     <bean name="OrcidSource" class="org.dspace.authority.orcid.Orcid">
         <constructor-arg value="http://pub.orcid.org"/>
     </bean>
