@@ -54,7 +54,7 @@ public class AuthorityValueGenerator {
                 if (StringUtils.isBlank(nextValue.getId())) {
                     // Only generate a new UUID if an appropriate id was not already set
                     // by the AuthorityValue implementation. This allows the implementation
-                    // to reuse existing Solr documents.
+                    // to preserve existing Solr document IDs.
                     generateNewUUID = true;
                 }
             }
@@ -63,8 +63,8 @@ public class AuthorityValueGenerator {
                 nextValue.setId(UUID.randomUUID().toString());
                 nextValue.updateLastModifiedDate();
                 nextValue.setCreationDate(new Date());
-                nextValue.setField(field);
             }
+            nextValue.setField(field);
         }
 
         return nextValue;
