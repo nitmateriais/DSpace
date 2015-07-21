@@ -7,6 +7,8 @@
  */
 function AuthorLookup(url, authorityInput, collectionID) {
 //    TODO i18n
+    $('.dataTables_wrapper').parent().remove();
+
     var content =   $('<div title="Person Lookup">' +
                         '<table class="dttable">' +
                             '<thead>' +
@@ -85,6 +87,27 @@ function AuthorLookup(url, authorityInput, collectionID) {
                 }
             }
             searchFilter.val(initialInput);
+            // Monkey patch searchFilter keyup event handler
+            searchFilter.each(function() {
+                var keyUpEvs = jQuery._data(this, 'events').keyup;
+                if (!keyUpEvs instanceof Array)
+                    return;
+                keyUpEvs.forEach(function(keyUpEv) {
+                    keyUpEv.data = keyUpEv.handler;
+                    keyUpEv.handler = function(e) {
+                        // Only act to the ENTER key
+                        if (e.keyCode == 13)
+                            return e.data.apply(this, e);
+                    }
+                });
+                var sFilter = $(this);
+                // Add search button
+                $('<button type="button">&#128269;</button>')
+                    .insertAfter(sFilter)
+                    .click(function() {
+                        sFilter.trigger($.Event("keyup", { keyCode: 13 }));
+                    });
+            });
             setTimeout(function () {
                 searchFilter.trigger($.Event("keyup", { keyCode: 13 }));
             },50);
