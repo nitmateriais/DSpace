@@ -73,7 +73,7 @@ public class LattesAuthorityValue extends PersonAuthorityValue {
     public static LattesAuthorityValue create(Person person) {
         LattesAuthorityValue authority = LattesAuthorityValue.create();
         authority.setValues(person);
-        authority.setId("lattes::"+person.getIdCNPq());
+        authority.setId("lattes_"+person.getIdCNPq());
         return authority;
     }
 
