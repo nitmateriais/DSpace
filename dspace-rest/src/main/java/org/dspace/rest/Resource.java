@@ -81,7 +81,7 @@ public class Resource
 
             if (person != null)
             {
-                context.setCurrentUser(person);
+                context.setCurrentUser(EPerson.find(context, person.getID()));
             }
 
             return context;
