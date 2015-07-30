@@ -737,6 +737,108 @@ public class ItemsResource extends Resource
     }
 
     /**
+     * Withdraw item from DSpace.
+     */
+    @PUT
+    @Path("/{item_id}/withdraw")
+    public Response withdrawItem(@PathParam("item_id") Integer itemId, @QueryParam("userIP") String user_ip,
+                                 @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor,
+                                 @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+
+        log.info("Withdrawing item(id=" + itemId + ").");
+        org.dspace.core.Context context = null;
+
+        try
+        {
+            context = createContext(getUser(headers));
+            org.dspace.content.Item dspaceItem = findItem(context, itemId, org.dspace.core.Constants.REMOVE);
+
+            writeStats(dspaceItem, UsageEvent.Action.WITHDRAW, user_ip, user_agent, xforwardedfor, headers, request, context);
+
+            log.trace("Withdrawing item.");
+            dspaceItem.withdraw();
+            context.complete();
+
+        }
+        catch (SQLException e)
+        {
+            processException("Could not withdraw item(id=" + itemId + "), SQLException. Message: " + e, context);
+        }
+        catch (AuthorizeException e)
+        {
+            processException("Could not withdraw item(id=" + itemId + "), AuthorizeException. Message: " + e, context);
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        catch (IOException e)
+        {
+            processException("Could not withdraw item(id=" + itemId + "), IOException. Message: " + e, context);
+        }
+        catch (ContextException e)
+        {
+            processException("Could not withdraw item(id=" + itemId + "), ContextException. Message: " + e.getMessage(), context);
+        }
+        finally
+        {
+            processFinally(context);
+        }
+
+        log.info("Item(id=" + itemId + ") was successfully withdrawn.");
+        return Response.status(Status.OK).build();
+    }
+
+    /**
+     * Reinstate item to DSpace.
+     */
+    @PUT
+    @Path("/{item_id}/reinstate")
+    public Response reinstateItem(@PathParam("item_id") Integer itemId, @QueryParam("userIP") String user_ip,
+                                  @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor,
+                                  @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+
+        log.info("Reinstating item(id=" + itemId + ").");
+        org.dspace.core.Context context = null;
+
+        try
+        {
+            context = createContext(getUser(headers));
+            org.dspace.content.Item dspaceItem = findItem(context, itemId, org.dspace.core.Constants.ADMIN);
+
+            writeStats(dspaceItem, UsageEvent.Action.REINSTATE, user_ip, user_agent, xforwardedfor, headers, request, context);
+
+            log.trace("Reinstating item.");
+            dspaceItem.reinstate();
+            context.complete();
+
+        }
+        catch (SQLException e)
+        {
+            processException("Could not reinstate item(id=" + itemId + "), SQLException. Message: " + e, context);
+        }
+        catch (AuthorizeException e)
+        {
+            processException("Could not reinstate item(id=" + itemId + "), AuthorizeException. Message: " + e, context);
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        catch (IOException e)
+        {
+            processException("Could not reinstate item(id=" + itemId + "), IOException. Message: " + e, context);
+        }
+        catch (ContextException e)
+        {
+            processException("Could not reinstate item(id=" + itemId + "), ContextException. Message: " + e.getMessage(), context);
+        }
+        finally
+        {
+            processFinally(context);
+        }
+
+        log.info("Item(id=" + itemId + ") was successfully reinstated.");
+        return Response.status(Status.OK).build();
+    }
+
+    /**
      * Delete all item metadata.
      * 
      * @param itemId
