@@ -739,7 +739,7 @@ public class ItemsResource extends Resource
     /**
      * Withdraw item from DSpace.
      */
-    @PUT
+    @POST
     @Path("/{item_id}/withdraw")
     public Response withdrawItem(@PathParam("item_id") Integer itemId, @QueryParam("userIP") String user_ip,
                                  @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor,
@@ -790,7 +790,7 @@ public class ItemsResource extends Resource
     /**
      * Reinstate item to DSpace.
      */
-    @PUT
+    @POST
     @Path("/{item_id}/reinstate")
     public Response reinstateItem(@PathParam("item_id") Integer itemId, @QueryParam("userIP") String user_ip,
                                   @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor,
